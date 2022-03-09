@@ -1,0 +1,161 @@
+---
+title: "R language"
+output:
+  html_document:
+    df_print: paged
+---
+
+source:
+
+
+## Control of the program flow 
+### if
+c style 
+
+if (logical expression) {
+  statements
+} else {
+  alternative statements
+}
+
+else is optional
+
+### for  
+Iterate on sequence 
+sequenc: vector, list, data frame
+
+```{r}
+for(i in 1:10) {
+   print(i * i)
+}
+```
+
+### while
+c syle
+
+```{r}
+i = 1
+while(i <= 10) {
+   print(i * i)
+   i = i + sqrt(i)
+}
+```
+
+## Functions
+* strict named argument
+* default argument value
+* 함수는 다른 함수 안에 nest 될 수 있다. 
+
+### 함수 선언
+
+```{r}
+add <- function(a, b = 0 )  # b = 0 default  값
+	{ 
+	  result = a + b
+  	return(result)  # one return value
+	}
+```
+
+### 함수 호출
+
+```{r}
+add(1)
+a <- 1
+add(a, 3)
+add(1, b = 4)
+
+```
+
+##  Scoping rules
+### search list
+1. First, look up the global environment(my work space)
+2. Search the namespaces of the packages in the search list - in the order of the last loaded package is searched first. 
+* Search list: GlobalEnv 로 부터 시작하여 package 가 로드된 역순으로 검색, base package 가 마지막.
+* search(): Shows search list
+
+```{r}
+search()
+```
+
+### lexical(static) scoping
+* 각 function 호출시 function 에 environment  가 할당되고
+* function의 local variable 들이 이 environment 에 저장
+* environment 는 tree 구조를 가짐, 즉 caller, calleee function 들간에  부모-자식 관계를 가짐
+* runtime 중 object name 을 현재 environment 에서 시작하여 tree구조의 윗방향 으로 root(empty) environment 까지 검색해 나간다.
+* ->> 는 특별한 assignment 기호, 현재 environment 가 아닌 조상 environment 의 변수에 assign  함
+* <<- , assign(x, value, inherits=TRUE) 의 의미:
+enclosing  environment  부터 검색시작 variable x 를 찾을 때까지 검색함. 
+
+
+## File I/O
+
+* excel, csv, txt 파일을 읽거나 쓸 수 있다.
+```{r}
+
+#folder
+getwd() #  get working folder
+# setwd("C:/Rfiles") # set working folder
+
+x <- data.frame(Name = c("james", "길동", "mary"),
+                Score = c(100, 80, 90))
+row.names(x)<- c(1, 2, 3)
+write.csv(
+  x,                 
+  file="성적.csv",          
+  row.names=TRUE,   
+  )
+
+y <- read.csv( # data frame 을 돌려 줌
+  file="성적.csv",          
+  header=FALSE,  
+  na.strings="NA", # NA char. string을 NA 로 저장, 기본값
+  stringsAsFactors=default.stringsAsFactors() 
+  # char.string 을 factor 로 저장, 기본값 
+)
+```
+### R data file
+
+* 변수의 값들을 Rdata  file 형식으로 저장 - txt 형식
+
+```{r}
+# Saving on object in RData format
+save(x, file = "data.RData")
+# Save multiple objects
+y <- 1
+save(x, y, file = "data.RData")
+# To load the data again
+load("data.RData")
+
+# Save the whole work space
+save.image(file="d:/all.RData")
+# Load image
+load("d:/all.RData")
+```
+
+## More on R intro
+
+## data
+### 내장된 data set
+```{r}
+data() # list data sets
+data("mtcars") # load mtcars data set
+str(mtcars)
+head(mtcars) # first 5 rows
+tail(mtcars) # last 5 rows
+```
+## play with a table
+```{r}
+apply(mtcars, 2, typeof) # 각 열에 대하여 typeof 함수 적용
+apply(mtcars, 2, mean)
+mtcars["Mean",] <- apply(mtcars, 2, mean)
+mtcars$new_column <- mtcars$mpg + mtcars$cyl
+tail(mtcars)
+
+```
+
+
+
+
+
+
+### END
