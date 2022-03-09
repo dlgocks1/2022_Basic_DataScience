@@ -1,0 +1,673 @@
+---
+title: "R type and structure"
+output:
+  html_document:
+    df_print: paged
+---
+
+source:
+
+-   -\> <https://swcarpentry.github.io/r-novice-inflammation/13-supp-data-structures/#>:\~:text=Key%20Points,%2C%20data%20frame%2C%20and%20factors
+-   -\> <http://adv-r.had.co.nz/Data-structures.html>
+
+## vectors (atomic vectors)
+
+-   수 1, 2, 4, 8 을 요소로 하는 벡터를 생성
+-   c() : combine 함수
+
+```{r}
+b <- c(1, 2, 4, 8)          
+print(b)
+typeof(b) # double이다.  int 가 아님
+```
+
+### colon(:) operator
+
+-   sequence-연속된 수들을 나열한 벡터 를 생성
+
+```{r}
+1:5 # sequence or range
+c <- 1:5 
+c # int vector
+typeof(c)
+```
+
+-   위 출력에서 [1] 은 출력된 데이터 중 가장 왼쪽의 수 1 이 벡터에서 첫번째 요소 임을 나타낸다.
+-   R 에서 모든 출력은 모두 벡터 형식임
+-   R 에서 가장 기본이 되는 객체는 벡터 이며 스칼라 형은 없다.
+
+### range 에서 step 을 지정
+
+seq() 함수
+
+```{r}
+x <- seq(from = 1, to = 2, by = 0.1) # by = step
+x # double vector
+typeof(x)
+```
+
+-   !!! c() 와 동일이름을 사용하더라도 no error: 객체지향이므로 overloading?
+
+### character, logical vectors
+
+```{r}
+d <- c("영수", "호철", "순이")
+e <- c(TRUE, T, FALSE, T, F)
+```
+
+### NOTE: creating a vector
+
+-   an empty 'logical' (the default) vector
+
+```{r}
+vector() 
+```
+
+-   a vector with 3 int type elements
+
+```{r}
+a <- vector("integer", length = 3)
+a
+```
+
+### vector 의 속성
+
+-   속성을 조사하는 함수-functions
+
+```{r}
+d
+length(d)
+typeof(d)
+mode(d)
+class(d)
+str(d)
+attributes(d) # metadata
+```
+
+### 요소를 추가하기
+
+-   c()
+
+```{r}
+d <- c("영수", "호철", "순이")
+d <- c(d, "James") # 또는 d[4] <- "James"
+d
+```
+
+### 서로 다른 요소를 combine하는 경우
+
+-   강제 형변환-coercion: logical \> numeric \> character
+
+```{r}
+c(FALSE, 0)
+c(1, "character")
+c(1, "charcter", TRUE)
+```
+
+### change and inspect the types of objects
+
+-   as.name_of_type()
+-   is.name_of_type()
+
+```{r}
+as.character(c(1, 2, 3))
+is.numeric(1)
+```
+
+### Missing Data
+
+-   NA 는 빠진 값을 나타냄
+
+```{r}
+x <- c(0.5, NA, 0.7); y <-c("mary", "james", "jane")
+x; y
+
+is.na(x); is.na(y)
+anyNA(x); anyNA(y)
+```
+
+### Special values
+
+```{r}
+1/0 # Infinity
+0/0 # Not a Number -undefined
+pi
+```
+
+### subsetting
+
+-   index 를 이용하여 객체의 일부 요소들을 접근, 추출
+
+```{r}
+a <- c(11, 22, 33, 44, 55)
+a
+a[1] # 하나
+a[10]
+a[c(3, 1, 5)] # 여러개
+a[4:1]
+a[7] <- 77
+a
+```
+
+-   음수 인덱스는 제외함을 나타냄
+
+```{r}
+a <- c(11, 22, 33, 44, 55)
+a
+a[-1]
+a[c(-3, -1, -5)]
+```
+
+-   조건 으로 인덱싱
+
+```{r}
+a > 30
+a[a > 30]
+```
+
+### Objects Attributes 및 이들을 조사하는함수들
+
+-   names
+-   dimnames
+-   dim
+-   class
+-   attributes: metadata 를 추출, metadata 란 변수의 값 데이터 이외 속성을 설명하는 데이터이다.
+
+```{r}
+length(1:10)
+length("characters")
+nchar("characters")
+```
+
+### vector연산
+
+```{r}
+a = c(1, 3, 5, 7); b = c(1, 2, 4, 8)
+```
+
+-   element-wise(vectorization):상수 연산, 비교연산, 가감승제
+
+```{r}
+5 * a; 5 + a
+```
+
+```{r}
+a < 4
+```
+
+```{r}
+a + b; a - b; a / b; a * b 
+```
+
+-   벡터에 함수 적용
+
+```{r}
+sum(a); min(a); max(a); mean(a)
+```
+
+-   데이터에 포함된 NA, NaN 을 제외하고 계산하기 위하여함수들에서 파라미터 na.rm=TRUE 를 일반적으로 사용
+
+```{r}
+x = c(1, 2, NA, 0/0)
+x
+sum(x)
+sum(x, na.rm=TRUE) 
+```
+
+### 벡터의 내적, 외적
+
+```{r}
+a = c(1, 3, 5, 7); b = c(1, 2, 4, 8)
+a %*% b; a %o% b
+```
+
+# Recycling
+
+-   vector, matrix의 연산에서 두 연산자의 길이가 같지 않을 경우 길이가 작은 연산자를 반복하는 방식으로 길이 를 늘려 연산함
+
+```{r}
+a = c(1:5); b = c(1, -1)
+a; b
+a + b
+```
+
+-   logical TRUE, FALSE 는 산술 연산에서 각각 1, 0 으로 변환됨
+
+```{r}
+sum(c(TRUE, FALSE, TRUE))
+```
+
+### Attributes
+
+-   모든 object 는 임의의 attribute 들을 추가적으로 포함할 수 있다. attribute 들은 object 의 metadata를 저장한다.
+
+```{r}
+y <- 1:10
+attr(y, "my_attribute") <- "This is a vector" # attribute 저장
+# 위에서 "my_attribute" 는 attribute 의 이름, "This is a vector" 는 attribute 의 내용. 
+attr(y, "my_attribute") # attribute 물어 보기
+str(attributes(y)) # attribute 는 리스트 구조로 저장됨
+```
+
+-   structure() 는 attribute 를 변경한 새 object 를 돌려 줌
+
+```{r}
+structure(1:10, my_attribute = "This is a vector")
+```
+
+-   객체를 변경할 경우 attribute는 삭제 된다.
+
+```{r}
+z = y[1:5]
+attr(z,"my_attribute")
+```
+
+-   vector 에 name attribute 추가하기
+-   일부 요소들만 name을 주면 나머지는 "" (null string)으로 name 이 부여 됨
+
+```{r}
+# 아래 세 문장의 결과는 동일
+x <- c(a = 1, b = 2, c = 3) # vector 생성과 동시에 name 부여
+# x <- 1:3; names(x) <- c("a", "b", "c") # vector 생성후 name 부여
+# x <- setNames(1:3, c("a", "b", "c")) 
+x
+names(x)
+
+x <- 1:3; names(x)[[1]] <- c("a") # 하나의 요소에만 name 부여
+x
+names(x)
+```
+
+### Factors
+
+-   factor vector 의 일종 이며 는 종류를 나타냄, 즉, enumeration type
+-   명목형 변수를 나타내기 위하여 사용됨
+
+```{r}
+x <- factor(c("a", "b", "b", "a"))
+x
+class(x)
+levels(x)
+```
+
+-   levels: 는 factor의 요소 값으로 허락되는 종류값들
+-   levels 에 없는 요소는 저장할 수 없다.
+
+```{r}
+# error x[2] <- "c"
+levels(x) = c("a", "b", "c")
+x[2] <- "c"
+x
+```
+
+-   factor 를 처음 생성할 때 levels 을 임의로 정의해 줄 수 있다.
+
+```{r}
+sex_char <- c("m", "m", "m") # no "f"
+sex_factor <- factor(sex_char, levels = c("m", "f"))
+sex_factor
+table(sex_char) # table 함수 는 명목형 변수 의 값들의 빈도수를 테이블화
+table(sex_factor)
+```
+
+## 변수 관련 함수들
+
+-   ls(): working environment 에 저장된 변수 리스트
+-   rm(변수이름, ...): 변수 지우기
+-   rm(list = ls()): 모든 변수 지우기
+
+## Matrix
+
+-   matrix 도 atomic object (모든 요소가 동일한 type을 가짐)
+
+### Creating a matrix
+
+-   R 에서는 기본적으로열우선 방식으로 저장됨
+-   3 행 4 열을 가지는 matrix
+
+```{r}
+m <- matrix(1:12, nrow = 3, ncol = 4) # 열 우선
+m
+```
+
+-   행, 열의 인덱스가 표시됨
+
+-   행우선으로 저장
+
+```{r}
+mat <- matrix(1:12, nrow = 3, ncol = 4, byrow=TRUE) # byrow=TRUE 옵션으로 행 우선으로 지정
+mat
+mat_3d <- array(1:12, c(2, 3, 2)) # 2x3x2 크기의 3 차원 배열 , vector 로 차원 지정 
+mat_3d
+```
+
+-   rbind, cbind 는 vector 또는 matrix 를 각각 행, 열방향으로 연결한 행렬을 돌려 줌
+
+```{r}
+rbind(1:5, 6:10, 11:15)
+cbind(1:5, 6:10, 11:15)
+```
+
+### matrix 의 type, structure
+
+```{r}
+typeof(m)
+class(m)
+str(m)
+```
+
+### matrix 의 attributes
+
+```{r}
+attributes(m)
+dim(m)
+length(m)
+nrow(m)
+ncol(m)
+```
+
+### matrix 의 attributes
+
+```{r}
+mat_3d
+dimnames(mat_3d) <- list(c("one", "two"), c("a", "b", "c"), c("A", "B")) # row, col, plane names
+mat_3d
+```
+
+### matrix 는 vector의 확장
+
+-   즉,벡터에 행과 열의 수를 지정하여여 2차원 형태로 배열한 객체
+
+```{r}
+m <- matrix(1:12, nrow = 3, ncol = 4) # 열 우선
+m
+m[5] # 벡터 처럼 인덱싱
+m[m < 7]
+```
+
+-   위의 출력에서 인덱스가 [숫자]로 나타난 것은 출력된 데이터가 vector 임을 나타내며 숫자는 요소의 index
+
+### matrix 의 indexing, subsetting
+
+-   m[행인덱스, 열인덱스]와 같이 접근
+
+```{r}
+m
+```
+
+-   2번째 행 전체
+
+```{r}
+m[2,] -> a
+a
+```
+
+-   3번째 열 전체
+
+```{r}
+m[, 3] <- 0
+m
+```
+
+-   2 행 3 열에 위치한 요소
+
+```{r}
+m[2, 3] <- -10
+m
+```
+
+-   1,3행에서 2\~4열의 요소를 가지는 submatrix 추출
+
+```{r}
+m[c(1, 3), 2:4]
+```
+
+-   행, 열에 name attribute 을 주면 name 으로 인덱싱 가능
+
+```{r}
+rownames(m) <- c("A", "B", "C")
+colnames(m) <- c("a", "b", "c", "d")
+m
+rownames(m);colnames(m)
+m[c("A","C"), c("d", "a")]
+```
+
+### matrix 연산
+
+-   vector 와 같이 상수와 가감승제, vector 또는 matrix 간의 가감승제 는 element-wise 형식(요소별)으로 수행된다(vectorization)
+
+### matrix multiplication
+
+```{r}
+m = matrix(1:6, nrow = 3, ncol = 2)
+n = matrix(1:6, nrow = 2, ncol = 3)
+# Note: %*% 는 matrix multiplication 연산자임 
+m %*% n 
+# Note: * 는 element-wise multiplication 연산자임 
+m * m
+```
+
+### functions
+
+-   아래 함수는 행렬의 모든 요소들들에 일제히 적용됨
+
+```{r}
+sum(m); min(m); max(m); mean(m)
+```
+
+-   각 행, 열별로 적용되는 연산
+
+```{r}
+rowSums(m); rowMeans(m); colSums(m);colMeans(m)
+```
+
+## apply functions: loop-hiding
+
+-   함수를 행, 열별로 적용해 주는 함수
+-   각행 또는 열별로 sequence 하는 loop 를 만들어 줌
+-   apply 함수에는 apply, lapply, sapply, vapply 등이 있음
+
+```{r}
+m
+apply(m, 1, min) 
+# (object, dim, function) dim = 1, 2:함수 적용 방향. 각각 행별,열별로 함수 적용 
+apply(m, 2, min)
+```
+
+### Quiz
+
+-   Why such an output?
+
+```{r}
+m[1,][2]
+```
+
+### Quiz
+
+-   행렬 m 에서 5 이상 인 요소의 수를 계산하는 R 문장은?
+
+```{r}
+
+```
+
+### Note: non-atomic matrix
+
+-   예외적인 경우 - 서로 다른 type 의 요소들을 포함한 matrix
+
+```{r}
+matrix(list(1, "a", 1+2i, TRUE), 2, 2) 
+```
+
+### dim: attributes of a matrix
+
+```{r}
+m <- 1:6
+m # vector
+dim(m) <- c(2, 3) #dim is an attribute of a matrix
+m
+attributes(m)
+```
+
+### 다차원 배열-array
+
+```{r}
+m <- 1:24 
+dim(m) <- c(2, 3, 4)
+m
+
+```
+
+## List
+
+### List 의 생성
+
+-   create: list()
+-   coercion: as.list()
+-   empty list: vector()
+
+```{r}
+x <- list(1, "a", TRUE, 1+4i)
+x
+x_vector = 1:3
+x_vector
+x_list = as.list(x_vector)
+x_list
+x <- vector("list", length = 5) # 길이가 5인 empty list 를 생성 
+x
+```
+
+-   위 출력에서 [[숫자]] 는 리스트 내의 요소들의 인덱스를 나타냄,
+-   행렬, 벡터 인 경우는 []로 나타내어짐
+
+### List 의 indexing
+
+-   리스트의 각 element-요소는 name 을 가질 수 있다. (=python dictionary)
+
+```{r}
+l1 = list(fruits = c("apple", "orange", "banana"),
+          count = c(2, 3), 
+          sale = c(FALSE, TRUE, TRUE, FALSE))
+l1
+```
+
+### list 의 indexing
+
+-   [expression]는 요소를 원래 객체와 동일한 구조로 돌려줌.
+-   [[expression]], \$element_name 은 원래 객체에서 요소를 추출하여 요소(즉, contents)만 돌려줌
+
+```{r}
+l1[1] # list
+l1[[1]] # vector
+l1$fruit # vector
+```
+
+-   l1 list 에서 fruits 요소(벡터임)의 두번째 요소 "orange" 를 추출하자.
+
+```{r}
+l1[1][2] # wrong, why? 
+l1[[1]][2]
+l1$fruits[2]
+```
+
+-   list 는 여러가지 객체를 하나로 묶을 때 편리하다.
+-   또한, 각 요소에 name 을 줄 수 있어 인덱싱도 유연하다
+
+```{r}
+xlist <- list(a = "Karthik Ram", b = 1:10, data = head(iris))
+xlist
+```
+
+-   list 의 각 요소의 이름을 추출하기 위하여
+
+```{r}
+names(l1)
+```
+
+-   names 는 list 의 attribute 임
+
+```{r}
+attributes(l1)
+```
+
+-   names attribute 를 변경
+
+```{r}
+names(l1) <- c("과일", "숫자", "세일");l1
+```
+
+### Atomic vector, Recursive vector
+
+-   동일타입의 요소를 가지는 vector 를 atomic vector
+-   list 를 recursive vector 라고도 한다.
+-   list 는 list 를 재귀적으로 포함할 수 있다.
+
+```{r}
+x <- list(list(list(list())))
+str(x)
+```
+
+## data frames
+
+-   list의 일종이며 동일한 길이를 가지는 요소들의 리스트임
+-   table 형의 data 저장에 사용, 행:record, 열:변수 또는 속성을 나타냄
+
+## data frame 을 생성하는 함수들
+
+-   data.frame(): new data frame
+-   read.csv(), read.table(): file 부터 data 를 읽어 data frame 으로 저장
+
+```{r}
+df <- data.frame(x = 1:3, y = c("a", "b", "c"))
+df
+str(df)
+is.list(df)
+class(df)
+```
+
+### data frame 과 matrix 는 서로 유사한 객체
+
+-   서로 유사한 속성을 가지며 적용되는 함수(명)도 비슷하다
+
+## data frame 에 적용되는 함수들
+
+-   head() - shows first 6 rows
+-   tail() - shows last 6 rows
+-   dim() - returns the dimensions of data frame (i.e. number of rows and number of columns)
+-   nrow() - number of rows
+-   ncol() - number of columns
+-   str() - structure of data frame - name, type and preview of data in each column
+-   names() or colnames() - both show the names attribute for a data frame
+-   sapply(dataframe, class) - shows the class of each column in the data frame
+
+### data frame 의 indexing
+
+-   matrix 처럼 numeric, name index 가 가능
+
+```{r}
+df
+df[2,1]
+df["2","x" ]
+```
+
+-   data frame 은 list 이므로 각 요소(행)를 \$ operator 로 접근할 수 있음
+-   즉, dataframe객체\$요소의name 형식
+
+```{r}
+df
+df[2]   # df 로 return
+df$"y"  # df 로 return
+df[[2]] # 요소를 return
+```
+
+### NOTE: subsetting
+
+-   subset(dataframe, 조건, 열 선택): dataframe 을 조건에 따라 subsetting
+-   logical expression 으로 지정:
+
+```{r}
+df
+subset(df, x < 3, select = c(y) ) # df
+df[df[,1] < 3, "y"] # vector
+```
+
+### End
